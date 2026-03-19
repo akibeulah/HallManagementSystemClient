@@ -4,9 +4,16 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [auth, setAuth] = useState(() => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    return token && user ? { token, user: JSON.parse(user) } : null;
+    try {
+      const token = localStorage.getItem('token');
+      const user  = localStorage.getItem('user');
+      if (!token || !user) return null;
+      return { token, user: JSON.parse(user) };
+    } catch {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return null;
+    }
   });
 
   const login = useCallback((token, user) => {
